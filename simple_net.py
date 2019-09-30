@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
+import image_loader
+
 
 def disp_image(image):
     # need to reorder the tensor dimensions to work properly with imshow
@@ -31,9 +33,9 @@ image_w = 64
 
 def red_image():
     """
-  Returns an image that's all red.  Defined as a function so we don't
-  need to keep copying things.
-  """
+    Returns an image that's all red.  Defined as a function so we don't
+    need to keep copying things.
+    """
     return np.array(
         [
             np.ones((image_w, image_h)),
@@ -60,12 +62,6 @@ for _ in range(10000):
     is_red = np.random.choice(np.array([0.0, 1.0], dtype="double"))
     image = red_image() if is_red else green_image()
     rg_dataset.append((image, is_red))
-
-"""
-print("Shape of an image:", rg_dataset[0][0].shape)
-print(rg_dataset[0][0][:, :, :])
-disp_image(rg_dataset[0][0])
-"""
 
 rg_dataset_train, rg_dataset_test = sklearn.model_selection.train_test_split(
     rg_dataset, test_size=0.25
@@ -107,23 +103,19 @@ class cnn(nn.Module):
         return loss, optimizer
 
 
-# Define training parameters
-batch_size = 32
-learning_rate = 1e-2
-n_epochs = 10
-
-train_sampler = SubsetRandomSampler(np.arange(len(rg_dataset_train)))
-test_sampler = SubsetRandomSampler(np.arange(len(rg_dataset_test)))
-
-train_loader = torch.utils.data.DataLoader(
-    rg_dataset_train, batch_size=batch_size, sampler=train_sampler, num_workers=2
-)
-test_loader = torch.utils.data.DataLoader(
-    rg_dataset_test, batch_size=batch_size, sampler=test_sampler, num_workers=2
-)
+def make_loader(dataset, batch_size):
+    sampler = SubsetRandomSampler(np.arange(len(dataset)))
+    loader = torch.utils.data.DataLoader(
+        dataset, batch_size=batch_size, sampler=sampler, num_workers=2
+    )
+    return loader
 
 
-def train_model(net):
+train_loader = make_loader(rg_dataset_train, 32)
+test_loader = make_loader(rg_dataset_test, 32)
+
+
+def train_model(net, n_epochs, learning_rate):
     """ Train a the specified network.
 
         Outputs a tuple with the following four elements
@@ -216,4 +208,4 @@ net.to(device)
 # train_hist_x, train_loss_hist, test_hist_x, test_loss_hist = train_model(
 # net, torch.FloatTensor(rg_dataset_train), torch.FloatTensor(rg_dataset_test)
 # )
-train_hist_x, train_loss_hist, test_hist_x, test_loss_hist = train_model(net)
+train_hist_x, train_loss_hist, test_hist_x, test_loss_hist = train_model(net, 10, 1e-2)
