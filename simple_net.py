@@ -34,28 +34,30 @@ def red_image():
   Returns an image that's all red.  Defined as a function so we don't
   need to keep copying things.
   """
-    return np.asarray(
+    return np.array(
         [
             np.ones((image_w, image_h)),
             np.zeros((image_w, image_h)),
             np.zeros((image_w, image_h)),
-        ]
+        ],
+        dtype="double",
     )
 
 
 def green_image():
-    return np.asarray(
+    return np.array(
         [
             np.zeros((image_w, image_h)),
             np.ones((image_w, image_h)),
             np.zeros((image_w, image_h)),
-        ]
+        ],
+        dtype="double",
     )
 
 
 rg_dataset = []
 for _ in range(10000):
-    is_red = np.random.choice([0.0, 1.0])
+    is_red = np.random.choice(np.array([0.0, 1.0], dtype="double"))
     image = red_image() if is_red else green_image()
     rg_dataset.append((image, is_red))
 
@@ -84,7 +86,10 @@ class cnn(nn.Module):
         self.fc1 = nn.Linear(self.pool_out_size, fc1_size)
         self.fc2 = nn.Linear(fc1_size, 2)  # 2 output classes (uncursed, cursed)
 
+        self.double()
+
     def forward(self, x):
+
         conv1_out = self.conv1(x)
         pool_out = self.pool(conv1_out)
         act1_out = self.activation_func(pool_out)
@@ -92,10 +97,12 @@ class cnn(nn.Module):
         fc1_out = self.fc1(fc1_in)
         act2_out = self.activation_func(fc1_out)
         fc2_out = self.fc2(act2_out)
+
         return fc2_out
 
     def get_loss(self, learning_rate):
-        loss = nn.CrossEntropyLoss()  # | || |l |_
+
+        loss = nn.CrossEntropyLoss()
         optimizer = optim.Adam(self.parameters(), lr=learning_rate)
         return loss, optimizer
 
@@ -148,7 +155,6 @@ def train_model(net):
 
             # Get inputs in right form
             inputs, labels = data
-            print(inputs, labels)
             inputs, labels = Variable(inputs).to(device), Variable(labels).to(device)
 
             # In Pytorch, We need to always remember to set the optimizer gradients to 0 before we recompute the new gradients
@@ -158,7 +164,7 @@ def train_model(net):
             outputs = net(inputs)
 
             # Compute the loss and find the loss with respect to each parameter of the model
-            loss_size = loss(outputs, labels)
+            loss_size = loss(outputs, labels.long())
             loss_size.backward()
 
             # Change each parameter with respect to the recently computed loss.
