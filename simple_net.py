@@ -199,7 +199,7 @@ def train_model(net):
 
             # Forward pass
             test_outputs = net(inputs)
-            test_loss_size = loss(test_outputs, labels)
+            test_loss_size = loss(test_outputs, labels.long())
             total_test_loss += test_loss_size.data.item()
         test_loss_hist.append(total_test_loss / len(test_loader))
         test_hist_x.append(idx)
