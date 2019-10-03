@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
+import random
 import torch
 import torchvision.transforms as transforms
 from torchvision.datasets import ImageFolder
@@ -39,8 +40,10 @@ def load_images(top_dir, dims):
         img = transforms.ToTensor()(largest_subset(img, dims))
         transformed.append((img, cat))
 
+    random.shuffle(transformed)  # Get rid of any order
     return transformed
 
 
-target_dims = (120, 128)  # height, width
-pairs = load_images("dataset1", target_dims)
+if __name__ == "__main__":
+    target_dims = (120, 128)  # height, width
+    pairs = load_images("dataset1", target_dims)

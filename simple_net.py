@@ -19,53 +19,17 @@ import image_loader
 
 def disp_image(image):
     # need to reorder the tensor dimensions to work properly with imshow
-    plt.imshow(image.transpose(2, 1, 0))
+    reshaped = np.asarray(image).transpose(1, 2, 0)
+    plt.imshow(reshaped)
     plt.axis("off")
     plt.show()
 
 
-image_h = 64
-image_w = 64
+image_h = 120
+image_w = 128
 
 # Image format is: list of colors, each element is (list of rows, each element is (list of pixels))
 # i.e. the middle dimension is height
-
-
-def red_image():
-    """
-    Returns an image that's all red.  Defined as a function so we don't
-    need to keep copying things.
-    """
-    return np.array(
-        [
-            np.ones((image_w, image_h)),
-            np.zeros((image_w, image_h)),
-            np.zeros((image_w, image_h)),
-        ],
-        dtype="double",
-    )
-
-
-def green_image():
-    return np.array(
-        [
-            np.zeros((image_w, image_h)),
-            np.ones((image_w, image_h)),
-            np.zeros((image_w, image_h)),
-        ],
-        dtype="double",
-    )
-
-
-rg_dataset = []
-for _ in range(10000):
-    is_red = np.random.choice(np.array([0.0, 1.0], dtype="double"))
-    image = red_image() if is_red else green_image()
-    rg_dataset.append((image, is_red))
-
-rg_dataset_train, rg_dataset_test = sklearn.model_selection.train_test_split(
-    rg_dataset, test_size=0.25
-)
 
 
 class cnn(nn.Module):
@@ -111,11 +75,7 @@ def make_loader(dataset, batch_size):
     return loader
 
 
-train_loader = make_loader(rg_dataset_train, 32)
-test_loader = make_loader(rg_dataset_test, 32)
-
-
-def train_model(net, n_epochs, learning_rate):
+def train_model(net, n_epochs, learning_rate, train_loader, test_loader):
     """ Train a the specified network.
 
         Outputs a tuple with the following four elements
@@ -201,11 +161,61 @@ def train_model(net, n_epochs, learning_rate):
     return train_hist_x, train_loss_hist, test_hist_x, test_loss_hist
 
 
-device = "cpu"  # Change to "cuda" if on a machine with cuda
-net = cnn()
-net.to(device)
+def red_image():
+    """
+    Returns an image that's all red.  Defined as a function so we don't
+    need to keep copying things.
+    """
+    return np.array(
+        [
+            np.ones((image_w, image_h)),
+            np.zeros((image_w, image_h)),
+            np.zeros((image_w, image_h)),
+        ],
+        dtype="double",
+    )
 
-# train_hist_x, train_loss_hist, test_hist_x, test_loss_hist = train_model(
-# net, torch.FloatTensor(rg_dataset_train), torch.FloatTensor(rg_dataset_test)
-# )
-train_hist_x, train_loss_hist, test_hist_x, test_loss_hist = train_model(net, 10, 1e-2)
+
+def green_image():
+    return np.array(
+        [
+            np.zeros((image_w, image_h)),
+            np.ones((image_w, image_h)),
+            np.zeros((image_w, image_h)),
+        ],
+        dtype="double",
+    )
+
+
+if __name__ == "__main__":
+
+    dataset = image_loader.load_images("dataset1", (image_h, image_w))
+    for image, cat in dataset[:10]:
+        print(cat)
+        disp_image(image)
+
+    """
+    rg_dataset = []
+    for _ in range(10000):
+        is_red = np.random.choice(np.array([0.0, 1.0], dtype="double"))
+        image = red_image() if is_red else green_image()
+        rg_dataset.append((image, is_red))
+
+    rg_dataset_train, rg_dataset_test = sklearn.model_selection.train_test_split(
+        rg_dataset, test_size=0.25
+    )
+
+    train_loader = make_loader(rg_dataset_train, 32)
+    test_loader = make_loader(rg_dataset_test, 32)
+
+    device = "cpu"  # Change to "cuda" if on a machine with cuda
+    net = cnn()
+    net.to(device)
+
+    # train_hist_x, train_loss_hist, test_hist_x, test_loss_hist = train_model(
+    # net, torch.FloatTensor(rg_dataset_train), torch.FloatTensor(rg_dataset_test)
+    # )
+    train_hist_x, train_loss_hist, test_hist_x, test_loss_hist = train_model(
+        net, 10, 1e-2, train_loader, test_loader
+    )
+    """
