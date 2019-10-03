@@ -37,6 +37,7 @@ def load_images(top_dir, dims):
 
     transformed = []
     for img, cat in pairs:
+        # img = torch.from_numpy(largest_subset(img, dims))
         img = transforms.ToTensor()(largest_subset(img, dims))
         transformed.append((img, cat))
 

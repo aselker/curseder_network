@@ -46,8 +46,6 @@ class cnn(nn.Module):
         self.fc1 = nn.Linear(self.pool_out_size, fc1_size)
         self.fc2 = nn.Linear(fc1_size, 2)  # 2 output classes (uncursed, cursed)
 
-        self.double()
-
     def forward(self, x):
 
         conv1_out = self.conv1(x)
@@ -190,23 +188,13 @@ def green_image():
 if __name__ == "__main__":
 
     dataset = image_loader.load_images("dataset1", (image_h, image_w))
-    for image, cat in dataset[:10]:
-        print(cat)
-        disp_image(image)
 
-    """
-    rg_dataset = []
-    for _ in range(10000):
-        is_red = np.random.choice(np.array([0.0, 1.0], dtype="double"))
-        image = red_image() if is_red else green_image()
-        rg_dataset.append((image, is_red))
-
-    rg_dataset_train, rg_dataset_test = sklearn.model_selection.train_test_split(
-        rg_dataset, test_size=0.25
+    dataset_train, dataset_test = sklearn.model_selection.train_test_split(
+        dataset, test_size=0.25
     )
 
-    train_loader = make_loader(rg_dataset_train, 32)
-    test_loader = make_loader(rg_dataset_test, 32)
+    train_loader = make_loader(dataset_train, 32)
+    test_loader = make_loader(dataset_test, 32)
 
     device = "cpu"  # Change to "cuda" if on a machine with cuda
     net = cnn()
@@ -218,4 +206,3 @@ if __name__ == "__main__":
     train_hist_x, train_loss_hist, test_hist_x, test_loss_hist = train_model(
         net, 10, 1e-2, train_loader, test_loader
     )
-    """
