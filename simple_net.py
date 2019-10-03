@@ -25,8 +25,8 @@ def disp_image(image):
     plt.show()
 
 
-image_h = 120
-image_w = 128
+image_h = 240
+image_w = 256
 
 # Image format is: list of colors, each element is (list of rows, each element is (list of pixels))
 # i.e. the middle dimension is height
@@ -159,32 +159,6 @@ def train_model(net, n_epochs, learning_rate, train_loader, test_loader):
     return train_hist_x, train_loss_hist, test_hist_x, test_loss_hist
 
 
-def red_image():
-    """
-    Returns an image that's all red.  Defined as a function so we don't
-    need to keep copying things.
-    """
-    return np.array(
-        [
-            np.ones((image_w, image_h)),
-            np.zeros((image_w, image_h)),
-            np.zeros((image_w, image_h)),
-        ],
-        dtype="double",
-    )
-
-
-def green_image():
-    return np.array(
-        [
-            np.zeros((image_w, image_h)),
-            np.ones((image_w, image_h)),
-            np.zeros((image_w, image_h)),
-        ],
-        dtype="double",
-    )
-
-
 if __name__ == "__main__":
 
     dataset = image_loader.load_images("dataset1", (image_h, image_w))
@@ -200,9 +174,6 @@ if __name__ == "__main__":
     net = cnn()
     net.to(device)
 
-    # train_hist_x, train_loss_hist, test_hist_x, test_loss_hist = train_model(
-    # net, torch.FloatTensor(rg_dataset_train), torch.FloatTensor(rg_dataset_test)
-    # )
     train_hist_x, train_loss_hist, test_hist_x, test_loss_hist = train_model(
         net, 10, 1e-2, train_loader, test_loader
     )
