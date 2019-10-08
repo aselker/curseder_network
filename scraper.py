@@ -17,7 +17,12 @@ reddit = praw.Reddit(
 
 sub = reddit.subreddit("cursedimages")
 
-top = sub.top(limit=1000)
+top = sub.top(limit=2000)
 
+posts = {}
 for post in top:
-    print(post.title, post.id)
+    filename = post.title + "_" + post.id
+    url = post.url
+    posts[filename] = url
+
+print(len(posts))
