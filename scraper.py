@@ -20,8 +20,10 @@ sub = reddit.subreddit("cursedimages")
 top = sub.top(limit=2000)
 
 posts = {}
-for post in top:
+# for post in sub.top(limit=1000):
+for post in (sub.random() for _ in range(10000)):
     filename = post.title + "_" + post.id
+    print(filename)
     url = post.url
     posts[filename] = url
 
