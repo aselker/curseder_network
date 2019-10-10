@@ -3,6 +3,7 @@
 import sys
 import csv
 import urllib
+import subprocess
 
 with open(sys.argv[1]) as f:
     c = csv.reader(f, delimiter=",")
@@ -19,4 +20,4 @@ with open(sys.argv[1]) as f:
             continue
 
         command = ["wget", url, "-O " + '"' + name + '"']
-        print(command)
+        subprocess.call(command)
