@@ -8,13 +8,13 @@ import sys
 import urllib
 import subprocess
 
-from secret import personal_use_script, client_secret, password
+from secret import user_agent, personal_use_script, client_secret, username, password
 
 reddit = praw.Reddit(
     client_id=personal_use_script,
     client_secret=client_secret,
-    user_agent="cursed_scraper 1",
-    username="epicepee",
+    user_agent=user_agent,
+    username=username,
     password=password,
 )
 
