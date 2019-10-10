@@ -4,6 +4,7 @@
 import praw
 import pandas as pd
 import datetime as dt
+import sys
 
 from secret import personal_use_script, client_secret, password
 
@@ -15,16 +16,13 @@ reddit = praw.Reddit(
     password=password,
 )
 
-sub = reddit.subreddit("cursedimages")
+sub = reddit.subreddit(sys.argv[1])
 
 top = sub.top(limit=2000)
 
-posts = {}
 # for post in sub.top(limit=1000):
 for post in (sub.random() for _ in range(10000)):
-    filename = post.title + "_" + post.id
-    print(filename)
-    url = post.url
-    posts[filename] = url
-
-print(len(posts))
+    if post:
+        filename = post.title + "_" + post.id
+        url = post.url
+        print(filename + "," + url)
